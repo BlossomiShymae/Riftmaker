@@ -72,7 +72,7 @@ module Riftmaker
                     .split("/")
                     .reject { |tag| tag.include?(".png") }
                     .map do |tag|
-                      tag.sub("_", "")
+                      tag.gsub("_", "")
                          .split(TAG_REGEX)
                          .join(" ")
                     end

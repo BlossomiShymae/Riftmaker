@@ -26,20 +26,7 @@ module Riftmaker
         name = metadata["name"]
         inventory_icon = metadata["inventoryIcon"]
 
-        # Generate tags from inventory icon path
-        regex = /(?<=[A-Z])(?=[A-Z][a-z])|(?<=[^A-Z])(?=[A-Z])|(?<=[A-Za-z])(?=[^A-Za-z])/
-        tags = if inventory_icon.eql?("/lol-game-data/assets/")
-                 []
-               else
-                 inventory_icon.sub("/lol-game-data/assets/ASSETS/Loadouts/SummonerEmotes/", "")
-                               .split("/")
-                               .reject { |tag| tag.include?(".png") }
-                               .map do |tag|
-                                 tag.sub("_", "")
-                                    .split(regex)
-                                    .join(" ")
-                               end
-               end
+        tags = get_tags(inventory_icon)
 
         aggregate_metadata = aggregate_hash.fetch(id, {})
         aggregate_metadata["id"] = id
@@ -71,6 +58,23 @@ module Riftmaker
   end
 
   private
+
+  # Generate tags from inventory icon path using string manipulation.
+  def get_tags(inventory_icon)
+    regex = /(?<=[A-Z])(?=[A-Z][a-z])|(?<=[^A-Z])(?=[A-Z])|(?<=[A-Za-z])(?=[^A-Za-z])/
+    if inventory_icon.eql?("/lol-game-data/assets/")
+      []
+    else
+      inventory_icon.sub("/lol-game-data/assets/ASSETS/Loadouts/SummonerEmotes/", "")
+                    .split("/")
+                    .reject { |tag| tag.include?(".png") }
+                    .map do |tag|
+                      tag.sub("_", "")
+                         .split(regex)
+                         .join(" ")
+                    end
+    end
+  end
 
   # Fetch locales list available
   # [ "default", "ja_jp"... ]

@@ -7,9 +7,10 @@ require "json"
 
 module Riftmaker
   extend self
-  class Error < StandardError; end
 
   def run
+  # Raised when an HTTP request receives an unsuccessful status code
+  class HttpRequestError < StandardError; end
     # Fetch locales list available
     # [ "default", "ja_jp"... ]
     global_folder_json = get_response("https://raw.communitydragon.org/json/latest/plugins/rcp-be-lol-game-data/global/")
@@ -76,7 +77,7 @@ module Riftmaker
   def get_response(uri)
     uri = URI(uri)
     res = Net::HTTP.get_response(uri)
-    raise "Response is not successful" unless res.is_a?(Net::HTTPSuccess)
+    raise HttpRequestError, "Response is not successful" unless res.is_a?(Net::HTTPSuccess)
 
     res.body
   end

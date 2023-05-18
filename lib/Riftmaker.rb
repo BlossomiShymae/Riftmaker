@@ -8,9 +8,12 @@ require "json"
 module Riftmaker
   extend self
 
-  def run
   # Raised when an HTTP request receives an unsuccessful status code
   class HttpRequestError < StandardError; end
+
+  # Run Riftmaker to generate static data (currently only summoner emotes).
+  # `summoner-emotes.json` will be created within the current directory upon success.
+  def generate
     # Fetch locales list available
     # [ "default", "ja_jp"... ]
     global_folder_json = get_response("https://raw.communitydragon.org/json/latest/plugins/rcp-be-lol-game-data/global/")

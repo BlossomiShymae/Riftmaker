@@ -6,7 +6,7 @@ RSpec.describe Riftmaker do
   end
 
   it "does something useful" do
-    Riftmaker.run
+    Riftmaker.generate
     expect(true).to eq(true)
   end
 end

@@ -14,13 +14,8 @@ module Riftmaker
   # Run Riftmaker to generate static data (currently only summoner emotes).
   # `summoner-emotes.json` will be created within the current directory upon success.
   def generate
-    # Fetch locales list available
-    # [ "default", "ja_jp"... ]
-    global_folder_json = get_response("https://raw.communitydragon.org/json/latest/plugins/rcp-be-lol-game-data/global/")
-    folder_hash = JSON.parse(global_folder_json)
-    locales = folder_hash.map { |directory| directory["name"] }
-
     # Get every summoner emotes JSON file by locale
+    locales = get_locales
     aggregate_hash = {}
     locales.each do |locale|
       metadata_json = get_response("https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/#{locale}/v1/summoner-emotes.json")
@@ -76,6 +71,15 @@ module Riftmaker
   end
 
   private
+
+  # Fetch locales list available
+  # [ "default", "ja_jp"... ]
+  def get_locales
+    global_folder_json = get_response("https://raw.communitydragon.org/json/latest/plugins/rcp-be-lol-game-data/global/")
+    folder_hash = JSON.parse(global_folder_json)
+
+    folder_hash.map { |directory| directory["name"] }
+  end
 
   def get_response(uri)
     uri = URI(uri)

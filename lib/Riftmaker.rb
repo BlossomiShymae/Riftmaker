@@ -20,8 +20,10 @@ module Riftmaker
   def generate
     # Get every summoner emotes JSON file by locale
     locales = get_locales(LOCALES_PATH)
+    puts "Fetched locales list: #{locales}"
     aggregate_hash = {}
     locales.each do |locale|
+      puts "Fetching for #{locale}..."
       metadata_json = get_response("#{URL_PATH}/latest/plugins/rcp-be-lol-game-data/global/#{locale}/v1/summoner-emotes.json")
       metadatas = JSON.parse(metadata_json)
       # Iterate over metadata array
@@ -56,6 +58,7 @@ module Riftmaker
                                    .to_h
 
     # Write aggregate metadata
+    puts "Writing aggregate data to summoner-emotes.json..."
     File.open("summoner-emotes.json", "w") do |f|
       f.write(aggregate_hash.to_json)
     end

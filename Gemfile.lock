@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    Riftmaker (0.1.0)
+    riftmaker (0.1.0)
 
 GEM
   remote: https://rubygems.org/
@@ -48,8 +48,8 @@ PLATFORMS
   x64-mingw-ucrt
 
 DEPENDENCIES
-  Riftmaker!
   rake (~> 13.0)
+  riftmaker!
   rspec (~> 3.0)
   rubocop (~> 1.21)
 

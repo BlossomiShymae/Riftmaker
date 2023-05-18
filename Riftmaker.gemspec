@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
-require_relative "lib/Riftmaker/version"
+require_relative "lib/riftmaker/version"
 
 Gem::Specification.new do |spec|
-  spec.name = "Riftmaker"
+  spec.name = "riftmaker"
   spec.version = Riftmaker::VERSION
   spec.authors = ["BlossomiShymae"]
   spec.email = ["87099578+BlossomiShymae@users.noreply.github.com"]

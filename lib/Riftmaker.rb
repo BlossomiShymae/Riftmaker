@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative "Riftmaker/version"
+require_relative "riftmaker/version"
 require "uri"
 require "net/http"
 require "json"

@@ -7,6 +7,10 @@ require "json"
 
 module Riftmaker
   extend self
+  TAG_REGEX = /(?<=[A-Z])(?=[A-Z][a-z])|(?<=[^A-Z])(?=[A-Z])|(?<=[A-Za-z])(?=[^A-Za-z])/.freeze
+  URL_PATH = "https://raw.communitydragon.org"
+  ASSETS_PATH = "/lol-game-data/assets/"
+  LOCALES_PATH = "https://raw.communitydragon.org/json/latest/plugins/rcp-be-lol-game-data/global/"
 
   # Raised when an HTTP request receives an unsuccessful status code
   class HttpRequestError < StandardError; end
@@ -15,10 +19,10 @@ module Riftmaker
   # `summoner-emotes.json` will be created within the current directory upon success.
   def generate
     # Get every summoner emotes JSON file by locale
-    locales = get_locales
+    locales = get_locales(LOCALES_PATH)
     aggregate_hash = {}
     locales.each do |locale|
-      metadata_json = get_response("https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/#{locale}/v1/summoner-emotes.json")
+      metadata_json = get_response("#{URL_PATH}/latest/plugins/rcp-be-lol-game-data/global/#{locale}/v1/summoner-emotes.json")
       metadatas = JSON.parse(metadata_json)
       # Iterate over metadata array
       metadatas.each do |metadata|
@@ -30,12 +34,12 @@ module Riftmaker
 
         aggregate_metadata = aggregate_hash.fetch(id, {})
         aggregate_metadata["id"] = id
-        aggregate_metadata["inventoryIcon"] = if inventory_icon.eql?("/lol-game-data/assets/") || inventory_icon.eql?("")
+        aggregate_metadata["inventoryIcon"] = if inventory_icon.eql?(ASSETS_PATH) || inventory_icon.eql?("")
                                                 ""
                                               else
                                                 path = inventory_icon.split("SummonerEmotes/")
                                                                      .map(&:downcase)
-                                                "https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/assets/loadouts/summoneremotes/#{path.last}"
+                                                "#{URL_PATH}/latest/plugins/rcp-be-lol-game-data/global/default/assets/loadouts/summoneremotes/#{path.last}"
                                               end
         aggregate_metadata["tags"] = tags
 
@@ -61,8 +65,7 @@ module Riftmaker
 
   # Generate tags from inventory icon path using string manipulation.
   def get_tags(inventory_icon)
-    regex = /(?<=[A-Z])(?=[A-Z][a-z])|(?<=[^A-Z])(?=[A-Z])|(?<=[A-Za-z])(?=[^A-Za-z])/
-    if inventory_icon.eql?("/lol-game-data/assets/")
+    if inventory_icon.eql?(ASSETS_PATH)
       []
     else
       inventory_icon.sub("/lol-game-data/assets/ASSETS/Loadouts/SummonerEmotes/", "")
@@ -70,7 +73,7 @@ module Riftmaker
                     .reject { |tag| tag.include?(".png") }
                     .map do |tag|
                       tag.sub("_", "")
-                         .split(regex)
+                         .split(TAG_REGEX)
                          .join(" ")
                     end
     end
@@ -78,8 +81,8 @@ module Riftmaker
 
   # Fetch locales list available
   # [ "default", "ja_jp"... ]
-  def get_locales
-    global_folder_json = get_response("https://raw.communitydragon.org/json/latest/plugins/rcp-be-lol-game-data/global/")
+  def get_locales(path)
+    global_folder_json = get_response(path)
     folder_hash = JSON.parse(global_folder_json)
 
     folder_hash.map { |directory| directory["name"] }
